@@ -1,5 +1,5 @@
 #!/usr/bin/python3
-"""new engine"""
+""" new class for sqlAlchemy """
 from os import getenv
 from sqlalchemy.orm import sessionmaker, scoped_session
 from sqlalchemy import (create_engine)
@@ -12,27 +12,32 @@ from models.place import Place
 from models.review import Review
 from models.amenity import Amenity
 
+
 class DBStorage:
-    """new variables"""
+    """ create tables in environmental"""
     __engine = None
     __session = None
 
     def __init__(self):
-        """ """
         user = getenv("HBNB_MYSQL_USER")
         passwd = getenv("HBNB_MYSQL_PWD")
-        host = getenv("HBNB_MYSQL_HOST")
         db = getenv("HBNB_MYSQL_DB")
+        host = getenv("HBNB_MYSQL_HOST")
         env = getenv("HBNB_ENV")
 
-        self.__engine = create_engine('mysql+mysqldb://{}:{}@{}/{}'.format(user, passwd, host, db), pool_pre_ping=True)
+        self.__engine = create_engine('mysql+mysqldb://{}:{}@{}/{}'
+                                      .format(user, passwd, host, db),
+                                      pool_pre_ping=True)
 
-        if env == 'test':
-            Base.metadata.drop_all(self.engine)
+        if env == "test":
+            Base.metadata.drop_all(self.__engine)
 
     def all(self, cls=None):
-        """return a dictionary"""
-        dict = {}
+        """returns a dictionary
+        Return:
+            returns a dictionary of __object
+        """
+        dic = {}
         if cls:
             if type(cls) is str:
                 cls = eval(cls)
@@ -41,14 +46,14 @@ class DBStorage:
                 key = "{}.{}".format(type(elem).__name__, elem.id)
                 dic[key] = elem
         else:
-             lista = [State, City, User, Place, Review, Amenity]
+            lista = [State, City, User, Place, Review, Amenity]
             for clase in lista:
                 query = self.__session.query(clase)
                 for elem in query:
                     key = "{}.{}".format(type(elem).__name__, elem.id)
-                    dict[key] = elem
-        return (dict)
-    
+                    dic[key] = elem
+        return (dic)
+
     def new(self, obj):
         """add a new element in the table
         """
@@ -72,7 +77,8 @@ class DBStorage:
         sec = sessionmaker(bind=self.__engine, expire_on_commit=False)
         Session = scoped_session(sec)
         self.__session = Session()
+
     def close(self):
-        """calls remove()
+        """ calls remove()
         """
         self.__session.close()
