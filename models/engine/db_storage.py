@@ -46,8 +46,8 @@ class DBStorage:
                 query = self.__session.query(clase)
                 for elem in query:
                     key = "{}.{}".format(type(elem).__name__, elem.id)
-                    dic[key] = elem
-        return (dic)
+                    dict[key] = elem
+        return (dict)
     
     def new(self, obj):
         """add a new element in the table
