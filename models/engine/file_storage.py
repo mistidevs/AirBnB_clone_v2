@@ -8,16 +8,25 @@ class FileStorage:
     __file_path = 'file.json'
     __objects = {}
 
-    def all(self):
-        """Returns a dictionary of models currently in storage"""
-        return self.__objects
+    def all(self, cls=None):
+        """Returns a dictionary of __object"""
+        dic = {}
+        if cls:
+            dictionary = self.__objects
+            for key in dictionary:
+                partition = key.replace('.', ' ')
+                partition = shlex.split(partition)
+                if (partition[0] == cls.__name__):
+                    dic[key] = self.__objects[key]
+            return (dic)
+        else:
+            return self.__objects
 
     def new(self, obj):
         """Adds new object to storage dictionary"""
         self.all().update({obj.to_dict()['__class__'] + '.' + obj.id: obj})
 
     def save(self):
-        """Saves storage dictionary to file"""
         """Saves storage dictionary to file"""
         with open(FileStorage.__file_path, 'w') as f:
             temp = {}
@@ -27,7 +36,7 @@ class FileStorage:
             json.dump(temp, f)
 
     def reload(self):
-         """Loads storage dictionary from file"""
+        """Loads storage dictionary from file"""
         from models.base_model import BaseModel
         from models.user import User
         from models.place import Place
@@ -42,19 +51,15 @@ class FileStorage:
                     'Review': Review
                   }
         try:
-            try:
             temp = {}
             with open(FileStorage.__file_path, 'r') as f:
                 temp = json.load(f)
                 for key, val in temp.items():
                         self.all()[key] = classes[val['__class__']](**val)
-        try:
-            except FileNotFoundError:
+        except FileNotFoundError:
             pass
-
     def delete(self, obj=None):
-        """ delete an existing element
-        """
-        if obj:
+        """delete an existing element"""
+         if obj:
             key = "{}.{}".format(type(obj).__name__, obj.id)
             del self.__objects[key]
