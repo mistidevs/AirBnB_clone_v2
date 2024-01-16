@@ -2,7 +2,7 @@
 """ new class for sqlAlchemy """
 from os import getenv
 from sqlalchemy.orm import sessionmaker, scoped_session
-from sqlalchemy import (create_engine)
+from sqlalchemy import create_engine, column
 from sqlalchemy.ext.declarative import declarative_base
 from models.base_model import Base
 from models.state import State
@@ -11,6 +11,7 @@ from models.user import User
 from models.place import Place
 from models.review import Review
 from models.amenity import Amenity
+import models
 
 
 class DBStorage:
@@ -39,16 +40,16 @@ class DBStorage:
         """
         dic = {}
         if cls:
-            if type(cls) is str:
-                cls = eval(cls)
-            query = self.__session.query(cls)
+            if isinstance(cls, str):
+                cls = getattr(models, cls)
+            query = self.__session.query(cls).all()
             for elem in query:
                 key = "{}.{}".format(type(elem).__name__, elem.id)
                 dic[key] = elem
         else:
             lista = [State, City, User, Place, Review, Amenity]
             for clase in lista:
-                query = self.__session.query(clase)
+                query = self.__session.query(clase).all()
                 for elem in query:
                     key = "{}.{}".format(type(elem).__name__, elem.id)
                     dic[key] = elem
