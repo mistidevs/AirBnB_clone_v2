@@ -17,8 +17,8 @@ class State(BaseModel, Base):
     cities = relationship("City", cascade='all, delete, delete-orphan',
                           backref="state")
 
-    if getenv("HBNB_TYPE_STORAGE") != "db":
-        @property
+
+        @getter
         def cities(self):
             var = models.storage.all()
             lista = []
