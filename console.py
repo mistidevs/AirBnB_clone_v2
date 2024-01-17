@@ -211,6 +211,7 @@ class HBNBCommand(cmd.Cmd):
             return
 
         key = c_name + "." + c_id
+        print(key)
 
         try:
             del(storage.all()[key])

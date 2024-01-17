@@ -6,6 +6,8 @@ from sqlalchemy import Column, Integer, String
 from sqlalchemy import Float, ForeignKey
 from os import getenv
 import models
+from sqlalchemy.orm import relationship
+
 
 class Place(BaseModel, Base):
     """Representation of Place """
@@ -21,6 +23,8 @@ class Place(BaseModel, Base):
         price_by_night = Column(Integer, nullable=False, default=0)
         latitude = Column(Float, nullable=True)
         longitude = Column(Float, nullable=True)
+        reviews = relationship("Review", cascade='all, delete, delete-orphan',
+                               backref="place")
 
     else:
         city_id = ""
@@ -34,3 +38,11 @@ class Place(BaseModel, Base):
         latitude = 0.0
         longitude = 0.0
         amenity_ids = []
+
+        @property
+        def reviews(self):
+            instances = []
+            for insta in model.storage.all():
+                if insta['place_id'] == self.id:
+                    instances.append(insta)
+            return instances
