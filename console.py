@@ -10,7 +10,6 @@ from models.state import State
 from models.city import City
 from models.amenity import Amenity
 from models.review import Review
-from os import getenv
 
 
 class HBNBCommand(cmd.Cmd):
@@ -114,41 +113,24 @@ class HBNBCommand(cmd.Cmd):
         """ Overrides the emptyline method of CMD """
         pass
 
-    def do_create(self, arg):
+    def do_create(self, args):
         """ Create an object of any class"""
-        args = arg.split()
-        if not arg:
+        try:
+            if not args:
+                raise SyntaxError()
+            arg_list = args.split(" ")
+            kw = {}
+            for arg in arg_list[1:]:
+                arg_splited = arg.split("=")
+                arg_splited[1] = eval(arg_splited[1])
+                if type(arg_splited[1]) is str:
+                    arg_splited[1] = arg_splited[1].replace("_", " ").replace('"', '\\"')
+                kw[arg_splited[0]] = arg_splited[1]
+        except SyntaxError:
             print("** class name missing **")
-            return
-        elif args[0] not in HBNBCommand.classes:
+        except NameError:
             print("** class doesn't exist **")
-            return
-
-        params = args[1:]
-        attributes = {}
-        for param in params:
-            key, value = param.split("=")
-
-            if value.startswith('"'):
-                value = value[1:-1]
-                value = value.replace("\\\"", '"')
-                value = value.replace("_", " ")
-                attributes[key] = value
-            elif "." in value:
-                try:
-                    attributes[key] = float(value)
-                except ValueError:
-                    pass
-            else:
-                try:
-                    attributes[key] = int(value)
-                except ValueError:
-                    pass
-                    
-        new_instance = HBNBCommand.classes[args[0]]()
-        for key, value in attributes.items():
-            setattr(new_instance, key, value)
-        
+        new_instance = HBNBCommand.classes[arg_list[0]](**kw)
         new_instance.save()
         print(new_instance.id)
 
@@ -211,7 +193,6 @@ class HBNBCommand(cmd.Cmd):
             return
 
         key = c_name + "." + c_id
-        print(key)
 
         try:
             del(storage.all()[key])
@@ -233,19 +214,11 @@ class HBNBCommand(cmd.Cmd):
             if args not in HBNBCommand.classes:
                 print("** class doesn't exist **")
                 return
-            if getenv("HBNB_TYPE_STORAGE") == "db":
-               print_list.append(storage.all(args))
-            else:
-                for k, v in storage._FileStorage__objects.items():
-                    if k.split('.')[0] == args:
-                        print_list.append(str(v))
+            for k, v in storage.all(HBNBCommand.classes[args]).items():
+                print_list.append(str(v))
         else:
-            if getenv("HBNB_TYPE_STORAGE") == "db":
-                print_list.append(storage.all())
-            else:
-                for k, v in storage._FileStorage__objects.items():
-                    print_list.append(str(v))
-
+            for k, v in storage.all().items():
+                print_list.append(str(v))
         print(print_list)
 
     def help_all(self):
