@@ -1,20 +1,22 @@
 #!/usr/bin/python3
-"""
-Fabric script that creates a compressed version
-of the web_static folder of the AirBnB Clone
-"""
+# Fabfile to generates a .tgz archive from the contents of web_static.
+import os.path
 from datetime import datetime
 from fabric.api import local
 
 
 def do_pack():
-    """
-    Create a .tgz archive
-    """
-    local("mkdir -p versions")
-    now = dateime.now
-    archive_path = f"web_static_{now.strftime('%Y%m%d%H%M%S')}.tgz"
-    if local(f"tar -czvf versions/{archive_path} web_static").succeeded:
-        return archive_path
-    else:
+    """Create a tar gzipped archive of the directory web_static."""
+    dt = datetime.utcnow()
+    file = "versions/web_static_{}{}{}{}{}{}.tgz".format(dt.year,
+                                                         dt.month,
+                                                         dt.day,
+                                                         dt.hour,
+                                                         dt.minute,
+                                                         dt.second)
+    if os.path.isdir("versions") is False:
+        if local("mkdir -p versions").failed is True:
+            return None
+    if local("tar -cvzf {} web_static".format(file)).failed is True:
         return None
+    return file
