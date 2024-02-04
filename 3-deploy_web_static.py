@@ -1,14 +1,13 @@
 #!/usr/bin/python3
-# Fab file that creates and distributes a .tgz archive
+# Fabfile to create and distribute an archive to a web server.
 import os.path
 from datetime import datetime
-from fabric.api import local
 from fabric.api import env
+from fabric.api import local
 from fabric.api import put
 from fabric.api import run
 
-
-env.hosts = ["34.227.101.27", "52.91.123.243"]
+env.hosts = ["104.196.168.90", "35.196.46.172"]
 
 
 def do_pack():
@@ -70,9 +69,7 @@ def do_deploy(archive_path):
 
 
 def deploy():
-    """
-    Creating and deploying an archive
-    """
+    """Create and distribute an archive to a web server."""
     file = do_pack()
     if file is None:
         return False
