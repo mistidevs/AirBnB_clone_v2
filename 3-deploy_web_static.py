@@ -74,8 +74,6 @@ def deploy():
     Creating and deploying an archive
     """
     file = do_pack()
-    if file != None:
-        result = do_deploy(file)
-        return result
-    else:
+    if file is None:
         return False
+    return do_deploy(file)
