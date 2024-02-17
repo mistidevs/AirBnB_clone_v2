@@ -2,7 +2,7 @@
 """
 Using flask to start a simple web server
 """
-from flask import Flask
+from flask import Flask, render_template
 
 
 app = Flask(__name__)
@@ -31,9 +31,14 @@ def python_text(text):
     return "Python %s" % text
 
 
-@app.route("/number/<int::n>", strict_slashes=False)
+@app.route("/number/<int:n>", strict_slashes=False)
 def num_check(n):
     return "%d is a number" % n
+
+
+@app.route("/number_template/<int:n>", strict_slashes=False)
+def num_checker_template(n):
+    return render_template("5-number.html", n=n)
 
 
 if __name__ == '__main__':
