@@ -27,7 +27,7 @@ def cities(id):
 
 
 @app.teardown_appcontext
-def closing(exception=None):
+def closing(exc):
     storage.close()
 
 
