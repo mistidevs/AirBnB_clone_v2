@@ -15,6 +15,7 @@ def states():
     states = sorted(storage.all(State).values(), key=lambda state: state.name)
     return render_template('9-states.html', states=states)
 
+
 @app.route('/states/<id>')
 def cities(id):
     states = sorted(storage.all(State).values(), key=lambda state: state.name)
@@ -28,7 +29,6 @@ def cities(id):
 @app.teardown_appcontext
 def closing(exception=None):
     storage.close()
-
 
 
 if __name__ == '__main__':
